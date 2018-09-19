@@ -1,4 +1,4 @@
-package controllers.posts
+package controllers
 
 import scala.concurrent.{ExecutionContext, Future}
 
