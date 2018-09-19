@@ -1,5 +1,6 @@
 package controllers
 
+import controllers.posts.PostsController
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
 

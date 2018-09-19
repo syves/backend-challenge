@@ -1,5 +1,8 @@
 package controllers.posts
 
+import javax.inject._
+import play.api._
+import play.api.mvc._
 import com.google.inject.Inject
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.{ExecutionContext, Future}
