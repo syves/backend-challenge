@@ -39,4 +39,26 @@ class PostRepository @Inject()(
     }
   }
 
+  //TODO should these be implemented in terms of the other methods?
+  def delete(id: Int): Future[Seq[Post]] = {
+    def optPost = posts.find(_.id == id)
+
+    optPost match {
+      case Some(p) => Future { posts -= p}
+      case None => Future {posts}
+    }
+  }
+
+  //def update(id: Int,  newPost: Post): Future[Option[Post]] = {
+  def update(id: Int): Future[Option[Post]] = {
+    def optPost = posts.find(_.id == id)
+
+    optPost match {
+        //TODO use buffer methods, update
+      //case Some(p) => posts -= p; posts += newPost; Future {posts.find(_.id == id)}
+     // case Some(p) => posts -= p; posts += newPost; Future {posts.find(_.id == id)}
+      case None => Future { None}
+    }
+  }
+
 }
