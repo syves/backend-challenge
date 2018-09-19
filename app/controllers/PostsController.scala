@@ -1,8 +1,5 @@
 package controllers.posts
 
-import javax.inject.Inject
-import play.api.libs.json.{JsError, JsValue, Json}
-import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents, Request}
 import scala.concurrent.{ExecutionContext, Future}
 
 class PostsController @Inject()(
@@ -27,6 +24,7 @@ class PostsController @Inject()(
     */
   def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val postResult = request.body.validate[Post]
+
     postResult.fold(
       errors => {
         Future.successful {
@@ -46,7 +44,7 @@ class PostsController @Inject()(
     */
   def readAll(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     postRepository.findAll.map { posts =>
-      val json = Json.toJson(posts)
+      val json = Json.toJson(posts.sortBy(_.id))
       Ok(json)
     }
   }
@@ -61,8 +59,27 @@ class PostsController @Inject()(
     * }
     *
     */
-  def readSingle(id: Int): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    ???
+  def readSingle(id: Int): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    val readResult = request.body.validate[Post]
+
+    readResult.fold(
+      errors => {
+        Future.successful {
+          BadRequest(Json.obj("status" ->"404", "message" -> "Post not found"))
+        }
+      },
+      get => {
+        def futOptPost = posts.find(_.id == id)
+
+        futOptPost.map { opt: Option[Post] =>
+          opt match {
+            case Some(p) => Ok(Json.toJson(p))
+            case None => Ok(Json.toJson(None))
+          }
+        }
+      }
+    )
+
   }
 
   /**
@@ -71,7 +88,7 @@ class PostsController @Inject()(
     * TODO Deletes the post with the given id.
     */
   def delete(id: Int): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    ???
+    Ok(postRepository.delete(id))
   }
 
   /**
@@ -81,7 +98,7 @@ class PostsController @Inject()(
     * TODO Changing the id of a post must not possible.
     */
   def update(id: Int): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    ???
+    Ok(postRepository.update(id))
   }
 
 
