@@ -1,6 +1,14 @@
 package controllers.posts
 
+import com.sun.tools.internal.ws.processor.model.Request
+
 import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Inject
+import javax.inject._
+import play.api._
+import play.api.mvc._
+
+import scala.collection.mutable.ListBuffer
 
 class PostsController @Inject()(
                                  cc: ControllerComponents,
@@ -12,9 +20,9 @@ class PostsController @Inject()(
     * This takes a Json in the format of
     *
     * {
-    *   "id": 1,
-    *   "title": "My Title",
-    *   "body": "My Post"
+    * "id": 1,
+    * "title": "My Title",
+    * "body": "My Post"
     * }
     *
     * and saves it into the persistance layer. The created Post is then returned.
@@ -28,7 +36,7 @@ class PostsController @Inject()(
     postResult.fold(
       errors => {
         Future.successful {
-          BadRequest(Json.obj("status" ->"400", "message" -> JsError.toJson(errors)))
+          BadRequest(Json.obj("status" -> "400", "message" -> JsError.toJson(errors)))
         }
       },
       post => {
@@ -54,8 +62,8 @@ class PostsController @Inject()(
     * TODO: If the post does not exist, returns a 404 with a json like
     *
     * {
-    *   "status": 404,
-    *   "message": "Post not found"
+    * "status": 404,
+    * "message": "Post not found"
     * }
     *
     */
@@ -65,21 +73,19 @@ class PostsController @Inject()(
     readResult.fold(
       errors => {
         Future.successful {
-          BadRequest(Json.obj("status" ->"404", "message" -> "Post not found"))
+          BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
         }
       },
       get => {
-        def futOptPost = posts.find(_.id == id)
+        def futOptPost = postRepository.find(id)
 
         futOptPost.map { opt: Option[Post] =>
           opt match {
             case Some(p) => Ok(Json.toJson(p))
-            case None => Ok(Json.toJson(None))
           }
         }
       }
     )
-
   }
 
   /**
@@ -87,8 +93,25 @@ class PostsController @Inject()(
     *
     * TODO Deletes the post with the given id.
     */
-  def delete(id: Int): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    Ok(postRepository.delete(id))
+  def delete(id: Int): Action[AnyContent] = Action.async(parse.json) { implicit request: Request[AnyContent] =>
+    val readResult = request.??
+
+    readResult.fold(
+      errors => {
+        Future.successful {
+          BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
+        }
+      },
+      post => {
+        def futOptJS = postRepository.delete(id)
+
+        futOptJS.map { opt: Option[JsValue] =>
+          opt match {
+            case Some(p) => Ok(p)
+          }
+        }
+      }
+    )
   }
 
   /**
@@ -98,7 +121,24 @@ class PostsController @Inject()(
     * TODO Changing the id of a post must not possible.
     */
   def update(id: Int): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    Ok(postRepository.update(id))
+    val readResult = request.body.validate[Post]
+
+    readResult.fold(
+      errors => {
+        Future.successful {
+          BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
+        }
+      },
+      post => {
+        def futOptPost = postRepository.update(id)
+
+        futOptPost.map { opt: Option[Post] =>
+          opt match {
+            case Some(p) => Ok(Json.toJson(p))
+          }
+        }
+      }
+    )
   }
 
 

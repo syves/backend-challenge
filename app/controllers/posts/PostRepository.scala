@@ -43,12 +43,20 @@ class PostRepository @Inject()(
   }
 
   //TODO should these be implemented in terms of the other methods?
-  def delete(id: Int): Future[Seq[Post]] = {
+  def delete(id: Int): Future[JsValue] = {
+
+    //list diff List(id)
+
     def optPost = posts.find(_.id == id)
 
     optPost match {
-      case Some(p) => Future { posts -= p}
-      case None => Future {posts}
+      case Some(p) =>
+        Future {
+          posts -= p
+          Json.obj("message" -> "Post has been deleted")
+        }
+
+    //  case None => Future {posts}
     }
   }
 
