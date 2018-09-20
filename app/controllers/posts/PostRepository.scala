@@ -75,3 +75,10 @@ class PostRepository @Inject()(
   }
 
 }
+
+object PostRepository {
+  def apply(implicit ec: ExecutionContext): PostRepository = {
+    var p = new PostRepository()
+    p
+  }
+}

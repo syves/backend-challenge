@@ -9,7 +9,6 @@ import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.json.JsValue
 
-import scala.collection.mutable.ListBuffer
 
 class PostsController @Inject()(
                                  cc: ControllerComponents,
