@@ -74,6 +74,9 @@ class PostRepository @Inject()(
     }
   }
 
+  def create = ???
+  //tODO should only create if id does not already exist
+
 }
 
 object PostRepository {

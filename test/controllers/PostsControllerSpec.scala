@@ -49,6 +49,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
   "PostsController GET/posts/:id" should {
 
     "render a single post on `posting` page from a new instance of controller" in {
+
       val executionContext = inject[ExecutionContext]
       implicit val sys = ActorSystem("MyTest")
       implicit val materializer = ActorMaterializer()
@@ -68,7 +69,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentAsString(getById) mustBe expected
     }
   }
-/*
+
   "PostsController GET/posts" should {
 
 
@@ -77,18 +78,24 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
     val executionContext = inject[ExecutionContext]
     implicit val sys = ActorSystem("MyTest")
     implicit val materializer = ActorMaterializer()
-      val controller = new PostsController(stubControllerComponents(), PostRepository(ec = executionContext),
-        executionContext)
-      val posts = controller.readall().apply(FakeRequest(GET, "/posts"))
 
+      val controller = new PostsController(
+        stubControllerComponents(),
+        PostRepository(ec = executionContext),
+        executionContext)
+
+      val posts = controller.readAll().apply(FakeRequest(GET, "/posts"))
+      val expected = """[{"id":1,"title":"Title 1","body":"Body 1"},{"id":2,"title":"Title 2","body":"Body 2"}]"""
       status(posts) mustBe OK
       //TODO count of posts
       //TODO extra credit pagination?
       contentType(posts) mustBe Some("application/json")
-      contentAsString(posts) must include ("Posts")
+      contentAsString(posts) mustBe expected
     }
     //    * TODO: Should return the Posts in ascending order on the ids.
   }
+
+  /*
 
   "PostsController PUT/posts/:id" should {
 
