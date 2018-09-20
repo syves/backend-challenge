@@ -30,7 +30,7 @@ class PostsController @Inject()(
     * TODO: It should fail, if there is already a Post with the same id present.
     *
     */
-  def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def create(post: Post): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val postResult = request.body.validate[Post]
 
     postResult.fold(
