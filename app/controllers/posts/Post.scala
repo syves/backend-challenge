@@ -19,21 +19,23 @@ case class Post(
 object Post {
 
   implicit val postFormat: Format[Post] = Json.format[Post]
-  
+
 
   def apply(id: Int, title: String, body: String): Post = {
     val p = new Post(id, title, body)
     p
   }
+/*
 
-  /*
   val postForm = Form(
     mapping(
       "id" -> number,
       "title" -> nonEmptyText,
       "body" -> nonEmptyText
-    )(postForm.apply)(postForm.unapply)
+    )(Post.apply(id, title, body))(Post.unapply())
   )
+  //TODO update form
 */
+
 }
 

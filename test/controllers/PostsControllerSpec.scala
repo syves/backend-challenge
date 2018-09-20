@@ -34,13 +34,21 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
         executionContext
       )
 
-      val newPost = Post(4, "Shakrah", "Yves")
-      val create = controller.create().apply(FakeRequest(POST, "/posts"))
+      val newPost = Json.obj("id" -> 4, "title" -> "Shakrah", "body" -> "Yves")
+      //FakeRequest(POST, path, postHeaders, body)
+      val create = controller.create()
+        .apply(
+          FakeRequest(
+            method=POST,
+            uri="/posts",
+
+            headers=FakeHeaders(Seq("Content-type"-> "application/json")),
+            body=newPost))
 
       status(create) mustBe OK
 
       contentType(create) mustBe Some("application/json")
-      contentAsString(create) must include ("Create Post")
+      contentAsString(create) mustBe """{"id":4,"title":"Shakrah","body":"Yves"}"""
     }
   }
 

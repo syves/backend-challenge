@@ -46,6 +46,21 @@ class PostsController @Inject()(
     )
   }
 
+  /*
+  userForm.bindFromRequest.fold(
+  formWithErrors => {
+    // binding failure, you retrieve the form containing errors:
+    BadRequest(views.html.user(formWithErrors))
+  },
+  userData => {
+    /* binding success, you get the actual value. */
+    val newUser = models.User(userData.name, userData.age)
+    val id = models.User.create(newUser)
+    Redirect(routes.Application.home(id))
+  }
+)*/
+
+
   /**
     * This returns a Json Array with a list of all Posts.
     *
