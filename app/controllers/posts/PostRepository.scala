@@ -21,8 +21,8 @@ class PostRepository @Inject()(
     * scala-std-library.
     */
   private val posts: ListBuffer[Post] = ListBuffer(
-    Post(1, "Title 1", "Body 1"),
-    Post(2, "Title 2", "Body 2")
+    Post(2, "Title 2", "Body 2"),
+    Post(1, "Title 1", "Body 1")
   )
 
   def find(id: Int): Future[Option[Post]] = {

@@ -9,7 +9,7 @@ GET     /                           controllers.HomeController.index
 
 # The API routes
 GET     /api/v1/posts               controllers.posts.PostsController.readAll
-#POST    /api/v1/posts               controllers.posts.PostsController.create(post: controllers.posts.Post)
+POST    /api/v1/posts               controllers.posts.PostsController.create
 GET     /api/v1/posts/:id           controllers.posts.PostsController.readSingle(id: Int)
 PUT     /api/v1/posts/:id           controllers.posts.PostsController.update(id: Int)
 DELETE  /api/v1/posts/:id           controllers.posts.PostsController.delete(id: Int)

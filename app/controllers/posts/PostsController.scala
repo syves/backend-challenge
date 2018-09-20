@@ -30,7 +30,7 @@ class PostsController @Inject()(
     * TODO: It should fail, if there is already a Post with the same id present.
     *
     */
-  def create(post: Post): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val postResult = request.body.validate[Post]
 
     postResult.fold(
@@ -40,6 +40,7 @@ class PostsController @Inject()(
         }
       },
       post => {
+        //get post from form?
         postRepository.insert(post).map(persisted => Ok(Json.toJson(persisted)))
       }
     )
@@ -68,26 +69,14 @@ class PostsController @Inject()(
     *
     */
   def readSingle(id: Int): Action[AnyContent] = Action.async { implicit request =>
-   /* val readResult = request.body
+    def futOptPost = postRepository.find(id)
 
-    readResult.fold(
-      errors => {
-        Future.successful {
-          BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
-        }
-      },
-      get => {
-      */
-        def futOptPost = postRepository.find(id)
-
-        futOptPost.map { opt: Option[Post] =>
-          opt match {
-            case Some(p) => Ok(Json.toJson(p))
-            case None => BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
-          }
-        }
-      //}
-    //)
+    futOptPost.map { opt: Option[Post] =>
+      opt match {
+        case Some(p) => Ok(Json.toJson(p))
+        case None => BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
+      }
+    }
   }
 
   /**
@@ -97,20 +86,7 @@ class PostsController @Inject()(
     */
 
   def delete(id: Int): Action[AnyContent] = Action.async { implicit request =>
-    //val readResult = request.body.validate[Post]
-
-    //readResult.fold(
-      //errors => {
-        //Future.successful {
-          //BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
-        //}
-      //},
-      //post => {
-        def futJS = postRepository.delete(id)
-
-        futJS.map (Ok(_))
-      //}
-    //)
+    postRepository.delete(id).map (Ok(_))
   }
 
   /**
