@@ -11,13 +11,18 @@ import com.google.inject.Inject
 import play.api.test._
 import play.api.test.Helpers._
 import akka.stream.ActorMaterializer
+import akka.actor.ActorSystem
 
 import scala.concurrent.{ExecutionContext, Future}
 
 
 class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting {
-  val executionContext = inject[ExecutionContext]
+
+
+  //val materializer = inject[ActorMaterializer]
+  /*
   "PostsController POST/posts should" should {
+  val executionContext = inject[ExecutionContext]
 
     "render a single post on `create` page from a new instance of controller" in {
       //postRepository, executionContext
@@ -26,7 +31,9 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
         PostRepository(ec = executionContext),
         executionContext
       )
-      val create = controller.create().apply(FakeRequest(POST, "/posts"))
+
+      val newPost = Post
+      val create = controller.create(newPost).apply(FakeRequest(POST, "/posts"))
 
       status(create) mustBe OK
       //TODO some("json") ?
@@ -38,12 +45,20 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentAsString(create) must include ("Create Post")
     }
   }
-/*
+  */
+
   "PostsController GET/posts/:id" should {
 
+    val executionContext = inject[ExecutionContext]
+    implicit val sys = ActorSystem("MyTest")
+    implicit val materializer = ActorMaterializer()
+
+
+
     "render a single post on `posting` page from a new instance of controller" in {
-      val controller = new PostsController(stubControllerComponents(),PostRepository(ec = ExecutionContext), ExecutionContext)
-      val getById = controller.readSingle(id: Int)().apply(FakeRequest(GET, "/posts/:id"))
+      val controller = new PostsController(stubControllerComponents(),PostRepository(ec = executionContext),
+        executionContext)
+      val getById = controller.readSingle(1)().apply(FakeRequest(GET, "/posts/:id"))
 
       status(getById) mustBe OK
       //TODO some("json")
@@ -55,11 +70,12 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentAsString(getById) must include ("Post by id")
     }
   }
-
+/*
   "PostsController GET/posts" should {
-
+    val executionContext = inject[ExecutionContext]
     "render all the posts on `list` page from a new instance of controller" in {
-      val controller = new PostsController(stubControllerComponents(), PostRepository(ec = ExecutionContext), ExecutionContext)
+      val controller = new PostsController(stubControllerComponents(), PostRepository(ec = executionContext),
+        executionContext)
       val posts = controller.readall().apply(FakeRequest(GET, "/posts"))
 
       status(posts) mustBe OK
@@ -75,9 +91,10 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
   }
 
   "PostsController PUT/posts/:id" should {
-
+    val executionContext = inject[ExecutionContext]
     "render a single post on `update` page, after update, from a new instance of controller" in {
-      val controller = new PostsController(stubControllerComponents(),PostRepository(ec = ExecutionContext), ExecutionContext)
+      val controller = new PostsController(stubControllerComponents(),PostRepository(ec = executionContext),
+        executionContext)
       val updateById = controller.update(id: Int)().apply(FakeRequest(PUT, "/posts/:id"))
 
       status(updateById) mustBe OK
@@ -92,10 +109,11 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
   }
 
   "PostsController DELETE/posts/:id" should {
-
+    val executionContext = inject[ExecutionContext]
     //todo check delete behavior..i think returns a message?
     "render a single post? on `delete` page, after update, from a new instance of controller" in {
-      val controller = new PostsController(stubControllerComponents(), PostRepository(ec = ExecutionContext), ExecutionContext)
+      val controller = new PostsController(stubControllerComponents(), PostRepository(ec = executionContext),
+        executionContext)
       val DeleteById = controller.delete(id: Int)().apply(FakeRequest(POST, "/posts/:id"))
 
       status(DeleteById) mustBe OK
