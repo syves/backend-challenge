@@ -1,17 +1,22 @@
 package controllers
 
+
 import controllers.posts.PostsController
+//import controllers.posts.PostRepository._
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
 import play.api.test._
 import play.api.test.Helpers._
+import scala.concurrent.{ExecutionContext, Future}
 
 class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting {
 
   "PostsController POST/posts should" should {
 
     "render a single post on `create` page from a new instance of controller" in {
-      val controller = new PostsController(stubControllerComponents())
+      //postRepository, executionContext
+      val controller = new PostsController(
+        stubControllerComponents())
       val create = controller.create().apply(FakeRequest(POST, "/posts"))
 
       status(create) mustBe OK
@@ -20,7 +25,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       //TODO check for post after by Id
       //TODO create delete view
 
-      //contentType(create) mustBe Some("application/json")
+      contentType(create) mustBe Some("application/json")
       contentAsString(create) must include ("Create Post")
     }
   }

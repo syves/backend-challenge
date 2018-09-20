@@ -1,12 +1,13 @@
 package controllers.posts
 
-import com.sun.tools.internal.ws.processor.model.Request
 
 import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.Inject
 import javax.inject._
 import play.api._
 import play.api.mvc._
+import play.api.libs.json._
+import play.api.libs.json.JsValue
 
 import scala.collection.mutable.ListBuffer
 
@@ -93,25 +94,22 @@ class PostsController @Inject()(
     *
     * TODO Deletes the post with the given id.
     */
-  def delete(id: Int): Action[AnyContent] = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    val readResult = request.??
 
-    readResult.fold(
-      errors => {
-        Future.successful {
-          BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
-        }
-      },
-      post => {
-        def futOptJS = postRepository.delete(id)
+  def delete(id: Int): Action[JsValue] = Action.async(parse.json){ implicit request =>
+    //val readResult = request.body.validate[Post]
 
-        futOptJS.map { opt: Option[JsValue] =>
-          opt match {
-            case Some(p) => Ok(p)
-          }
-        }
-      }
-    )
+    //readResult.fold(
+      //errors => {
+        //Future.successful {
+          //BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
+        //}
+      //},
+      //post => {
+        def futJS = postRepository.delete(id)
+
+        futJS.map { j: JsValue => Ok(j)}
+      //}
+    //)
   }
 
   /**
