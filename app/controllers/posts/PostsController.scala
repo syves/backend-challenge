@@ -96,7 +96,7 @@ class PostsController @Inject()(
     * TODO Deletes the post with the given id.
     */
 
-  def delete(id: Int): Action[JsValue] = Action.async(parse.json){ implicit request =>
+  def delete(id: Int): Action[AnyContent] = Action.async { implicit request =>
     //val readResult = request.body.validate[Post]
 
     //readResult.fold(
@@ -108,7 +108,7 @@ class PostsController @Inject()(
       //post => {
         def futJS = postRepository.delete(id)
 
-        futJS.map { j: JsValue => Ok(j)}
+        futJS.map (Ok(_))
       //}
     //)
   }

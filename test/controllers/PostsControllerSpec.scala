@@ -116,7 +116,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentAsString(updateById) must include ("Update by id")
     }
   }
-
+*/
   "PostsController DELETE/posts/:id" should {
 
 
@@ -127,18 +127,19 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
     implicit val materializer = ActorMaterializer()
       val controller = new PostsController(stubControllerComponents(), PostRepository(ec = executionContext),
         executionContext)
-      val DeleteById = controller.delete(id: Int)().apply(FakeRequest(POST, "/posts/:id"))
+      val DeleteById = controller.delete(id=2)().apply(FakeRequest(POST, "/posts/:id"))
 
       status(DeleteById) mustBe OK
 
-      //TODO check for post after by Id
-      //TODO create delete view
-
       contentType(DeleteById) mustBe Some("application/json")
-      contentAsString(DeleteById) must include ("Delete by id")
+      contentAsString(DeleteById) must include ("Post has been deleted")
+
+      val posts = controller.readAll().apply(FakeRequest(GET, "/posts"))
+      val expected = """[{"id":1,"title":"Title 1","body":"Body 1"}]"""
+      contentAsString(posts) must include
     }
   }
-*/
+
 
 
 
