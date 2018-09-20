@@ -35,7 +35,6 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       )
 
       val newPost = Json.obj("id" -> 4, "title" -> "Shakrah", "body" -> "Yves")
-      //FakeRequest(POST, path, postHeaders, body)
       val create = controller.create()
         .apply(
           FakeRequest(
@@ -97,28 +96,37 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
     }
   }
 
-  /*
 
   "PostsController PUT/posts/:id" should {
 
 
     "render a single post on `update` page, after update, from a new instance of controller" in {
-       val executionContext = inject[ExecutionContext]
-      implicit val sys = ActorSystem("MyTest")
-      implicit val materializer = ActorMaterializer()
+        val executionContext = inject[ExecutionContext]
+        implicit val sys = ActorSystem("MyTest")
+        implicit val materializer = ActorMaterializer()
 
-      val controller = new PostsController(stubControllerComponents(),PostRepository(ec = executionContext),
+      val controller = new PostsController(
+        stubControllerComponents(),
+        PostRepository(ec = executionContext),
         executionContext)
-      val updateById = controller.update(id: Int)().apply(FakeRequest(PUT, "/posts/:id"))
+
+      val newPost = Json.obj("id" -> 1, "title" -> "newTitle", "body" -> "newBody")
+      val updateById = controller.update(1)
+        .apply(
+          FakeRequest(
+            method=POST,
+            uri="/posts/:id",
+
+            headers=FakeHeaders(Seq("Content-type"-> "application/json")),
+            body=newPost))
 
       status(updateById) mustBe OK
-      //TODO create update view
 
       contentType(updateById) mustBe Some("application/json")
-      contentAsString(updateById) must include ("Update by id")
+      contentAsString(updateById) mustBe """{"id":1,"title":"newTitle","body":"newBody"}"""
     }
   }
-*/
+
   "PostsController DELETE/posts/:id" should {
 
 
