@@ -34,7 +34,7 @@ object Post {
         }
       }
       */
-      Some(Right(Post(1, "test", "test body")))
+      Some(Right(Post(3, "test", "test body")))
     }
     override def unbind(key: String, post: Post): String = {
       postBinder.unbind("id", post) + "&" + postBinder.unbind("title", post) + "&" + postBinder.unbind("body", post)

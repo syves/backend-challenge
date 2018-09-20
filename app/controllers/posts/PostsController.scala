@@ -67,8 +67,8 @@ class PostsController @Inject()(
     * }
     *
     */
-  def readSingle(id: Int): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    val readResult = request.body.validate[Post]
+  def readSingle(id: Int): Action[AnyContent] = Action.async { implicit request =>
+   /* val readResult = request.body
 
     readResult.fold(
       errors => {
@@ -77,15 +77,17 @@ class PostsController @Inject()(
         }
       },
       get => {
+      */
         def futOptPost = postRepository.find(id)
 
         futOptPost.map { opt: Option[Post] =>
           opt match {
             case Some(p) => Ok(Json.toJson(p))
+            case None => BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
           }
         }
-      }
-    )
+      //}
+    //)
   }
 
   /**

@@ -12,6 +12,8 @@ import play.api.test._
 import play.api.test.Helpers._
 import akka.stream.ActorMaterializer
 import akka.actor.ActorSystem
+import play.api.libs.json._
+import play.api.libs.json.JsValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -60,9 +62,10 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       status(getById) mustBe OK
       //TODO create posting view
+      val expected = Json.obj("id" -> 1 ,"title" -> "Title 1","body"-> "Body 1").toString
 
       contentType(getById) mustBe Some("application/json")
-      contentAsString(getById) must include ("Post by id")
+      contentAsString(getById) mustBe expected
     }
   }
 /*
