@@ -3,22 +3,27 @@ package controllers
 
 import controllers.posts.{PostRepository, PostsController}
 import controllers.posts.Post
-import org.scalatestplus.play._
-import org.scalatestplus.play.guice._
+
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
+
 import javax.inject._
+import com.google.inject.Inject
+
 import play.api._
 import play.api.mvc._
-import com.google.inject.Inject
-import play.api.test._
-import play.api.test.Helpers._
-import akka.stream.ActorMaterializer
-import akka.actor.ActorSystem
 import play.api.libs.json._
 import play.api.libs.json.JsValue
+import play.api.test._
+import play.api.test.Helpers._
+
+import org.scalatestplus.play._
+import org.scalatestplus.play.guice._
+
 
 import scala.concurrent.{ExecutionContext, Future}
 
-
+//TODO dry up tests
 class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injecting {
 
   "PostsController POST/posts should" should {
@@ -73,7 +78,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       status(create) mustBe 400
     }
-    //TODO if wrong content type error contains an example?
+
     "It should fail, if Json content is incorrect" in {
       val executionContext = inject[ExecutionContext]
       implicit val sys = ActorSystem("MyTest")
