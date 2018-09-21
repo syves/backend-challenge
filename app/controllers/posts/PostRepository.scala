@@ -56,6 +56,22 @@ class PostRepository @Inject()(
     }
   }
 
+  def updatePosts(id: Int, post: Post) = {
+
+    //post to be updated exists, this check is done in controller currently
+    def optPost = posts.find(_.id == id)
+
+    optPost match {
+
+      case Some(toUpdate) =>
+        if (post.id == toUpdate.id)
+        Future {
+          posts -= toUpdate
+          posts += post
+          post
+        }
+    }
+  }
 }
 
 object PostRepository {
