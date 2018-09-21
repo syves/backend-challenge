@@ -97,6 +97,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentType(getById) mustBe Some("application/json")
       contentAsString(getById) mustBe expected
     }
+
     "If the post does not exist, returns a 404 with a json" in {
       val executionContext = inject[ExecutionContext]
       implicit val sys = ActorSystem("MyTest")
@@ -163,6 +164,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentType(updateById) mustBe Some("application/json")
       contentAsString(updateById) mustBe """{"id":1,"title":"newTitle","body":"newBody"}"""
     }
+
     "Changing the id of a post must not possible." in {
       val executionContext = inject[ExecutionContext]
       implicit val sys = ActorSystem("MyTest")
@@ -185,13 +187,12 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       status(updateById) mustBe 400
     }
-    //when id is not found
   }
 
   "PostsController DELETE/posts/:id" should {
 
 
-    "Does not contain any body in the reques. Deletes the post with the given id." in {
+    "Does not contain any body in the request. Deletes the post with the given id." in {
 
      val executionContext = inject[ExecutionContext]
     implicit val sys = ActorSystem("MyTest")
@@ -200,14 +201,10 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
         executionContext)
       val DeleteById = controller.delete(id=2)().apply(FakeRequest(POST, "/posts/:id"))
 
-      status(DeleteById) mustBe OK
+      status(DeleteById) mustBe 204
 
       contentType(DeleteById) mustBe Some("application/json")
       contentAsString(DeleteById) must include ("Post has been deleted")
-
-      val posts = controller.readAll().apply(FakeRequest(GET, "/posts"))
-      val expected = """[{"id":1,"title":"Title 1","body":"Body 1"}]"""
-      contentAsString(posts) must include
     }
     //"when id not found" in {}
   }

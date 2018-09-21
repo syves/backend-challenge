@@ -47,10 +47,11 @@ class PostsController @Inject()(
           opt match {
             case Some(p) => BadRequest(Json.obj("status"->400,
                                                 "message"-> "Id is already in use"))
-            case None => postRepository.insert(post); Ok(Json.toJson(post))
+            case None => postRepository.insert(post);
+              Ok(Json.toJson("status" -> 200, Json.toJson("data" -> Json.toJson(post))))
+              }
           }
         }
-      }
     )
   }
 
@@ -63,7 +64,7 @@ class PostsController @Inject()(
   def readAll(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     postRepository.findAll.map { posts =>
       val json = Json.toJson(posts.sortBy(_.id))
-      Ok(json)
+      Ok(Json.toJson("status" -> 200, Json.toJson("data" -> json)))
     }
   }
 
@@ -82,7 +83,8 @@ class PostsController @Inject()(
 
     futOptPost.map { opt: Option[Post] =>
       opt match {
-        case Some(p) => Ok(Json.toJson(p))
+        case Some(p) => //Ok(Json.toJson(p))
+          Ok(Json.toJson("status" -> 200, Json.toJson("data" -> Json.toJson(p))))
         case None => BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
       }
     }
@@ -94,8 +96,9 @@ class PostsController @Inject()(
     * Deletes the post with the given id.
     */
 
-  def delete(id: Int): Action[AnyContent] = Action.async { implicit request =>
-    postRepository.delete(id).map (Ok(_))
+  def delete(id: Int): Action[AnyContent] = Action.async { request =>
+    postRepository.delete(id).map(res => (Ok(Json.toJson("status" -> "204"))))
+
   }
 
   /**
@@ -121,7 +124,9 @@ class PostsController @Inject()(
           opt match {
             //post by id exists, remove it and add the new post.
               //tie together  into an update function in post repository, these are async ops now
-            case Some(p) => postRepository.delete(p.id); postRepository.insert(post);  Ok(Json.toJson(post))
+            case Some(p) => postRepository.delete(p.id); postRepository.insert(post);
+              Ok(Json.toJson("status" -> 200, Json.toJson("data" -> Json.toJson(post))))
+              //Ok(Json.toJson(post))
             case None => BadRequest(Json.obj("status" -> 400,
               "message" -> " Changing the id of a post must not possible"))
           }
