@@ -48,10 +48,10 @@ class PostsController @Inject()(
             case Some(p) => BadRequest(Json.obj("status"->400,
                                                 "message"-> "Id is already in use"))
             case None => postRepository.insert(post);
-              Ok(Json.toJson("status" -> 200, Json.toJson("data" -> Json.toJson(post))))
-              }
+              Ok((Json.obj("status" -> 200, "data" -> Json.toJson(post))))
           }
         }
+      }
     )
   }
 
@@ -64,7 +64,7 @@ class PostsController @Inject()(
   def readAll(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     postRepository.findAll.map { posts =>
       val json = Json.toJson(posts.sortBy(_.id))
-      Ok(Json.toJson("status" -> 200, Json.toJson("data" -> json)))
+      Ok(Json.obj("status" -> 200, "data" -> json))
     }
   }
 
@@ -83,8 +83,8 @@ class PostsController @Inject()(
 
     futOptPost.map { opt: Option[Post] =>
       opt match {
-        case Some(p) => //Ok(Json.toJson(p))
-          Ok(Json.toJson("status" -> 200, Json.toJson("data" -> Json.toJson(p))))
+        case Some(p) =>
+          Ok(Json.obj("status" -> 200, "data" -> p))
         case None => BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
       }
     }
@@ -123,10 +123,9 @@ class PostsController @Inject()(
         futOptPost.map { opt: Option[Post] =>
           opt match {
             //post by id exists, remove it and add the new post.
-              //tie together  into an update function in post repository, these are async ops now
+              //TODO tie together  into an update function in post repository, these are async ops now
             case Some(p) => postRepository.delete(p.id); postRepository.insert(post);
-              Ok(Json.toJson("status" -> 200, Json.toJson("data" -> Json.toJson(post))))
-              //Ok(Json.toJson(post))
+              Ok(Json.obj("status" -> 200, "data" -> post))
             case None => BadRequest(Json.obj("status" -> 400,
               "message" -> " Changing the id of a post must not possible"))
           }
