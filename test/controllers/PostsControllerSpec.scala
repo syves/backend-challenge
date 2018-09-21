@@ -134,7 +134,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val getById = controller.readSingle(id=3)().apply(FakeRequest(GET, "/posts/:id"))
 
-      status(getById) mustBe 400
+      status(getById) mustBe 404
     }
   }
 
@@ -208,7 +208,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
             headers=FakeHeaders(Seq("Content-type"-> "application/json")),
             body=newPost))
 
-      status(updateById) mustBe 400
+      status(updateById) mustBe 404
     }
 
     "fails on id not found." in {
@@ -231,7 +231,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
             headers=FakeHeaders(Seq("Content-type"-> "application/json")),
             body=newPost))
 
-      status(updateById) mustBe 400
+      status(updateById) mustBe 404
     }
   }
 

@@ -44,7 +44,7 @@ class PostsController @Inject()(
 
         futOptPost.map { opt: Option[Post] =>
           opt match {
-            case Some(p) => BadRequest(Json.obj("status"->400, "message"-> "Id is already in use"))
+            case Some(p) => BadRequest(Json.obj("status"->404, "message"-> "Id is already in use"))
             case None    => postRepository.insert(post)
                             Ok((Json.obj("status" -> 200, "data" -> Json.toJson(post))))
 
@@ -84,7 +84,7 @@ class PostsController @Inject()(
     futOptPost.map { opt: Option[Post] =>
       opt match {
         case Some(p) => Ok(Json.obj("status" -> 200, "data" -> p))
-        case None => BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
+        case None => NotFound(Json.obj("status" -> "404", "message" -> "Post not found"))
       }
     }
   }
@@ -111,7 +111,7 @@ class PostsController @Inject()(
     readResult.fold(
       errors => {
         Future.successful {
-          BadRequest(Json.obj("status" -> "404", "message" -> "Post not found"))
+          NotFound(Json.obj("status" -> "404", "message" -> "Post not found"))
         }
       },
       post => {
@@ -120,7 +120,7 @@ class PostsController @Inject()(
         futPost.map { e =>
           e match {
             case Right(p)  => Ok(Json.obj ("status" -> 200, "data" -> p))
-            case Left(msg) =>  BadRequest(Json.obj("status" -> "400", "message" -> msg))
+            case Left(msg) =>  NotFound(Json.obj("status" -> "404", "message" -> msg))
           }
         }
       }
