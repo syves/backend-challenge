@@ -25,17 +25,6 @@ object Post {
     val p = new Post(id, title, body)
     p
   }
-/*
-
-  val postForm = Form(
-    mapping(
-      "id" -> number,
-      "title" -> nonEmptyText,
-      "body" -> nonEmptyText
-    )(Post.apply(id, title, body))(Post.unapply())
-  )
-  //TODO update form
-*/
 
 }
 

@@ -56,22 +56,21 @@ class PostRepository @Inject()(
     }
   }
 
-  def updatePosts(id: Int, post: Post) = {
+  def updatePosts(id: Int, post: Post): Future[Either[String, Post]] = {
 
-    //post to be updated exists, this check is done in controller currently
-    def optPost = posts.find(_.id == id)
+    def optPost = posts.find( p => p.id == id && id == post.id)
 
     optPost match {
-
-      case Some(toUpdate) =>
-        if (post.id == toUpdate.id)
+      case Some(toUpdate)  =>
         Future {
           posts -= toUpdate
           posts += post
-          post
+          Right(post)
         }
+      case None => Future{ Left("Not able to update post.") }
     }
   }
+
 }
 
 object PostRepository {

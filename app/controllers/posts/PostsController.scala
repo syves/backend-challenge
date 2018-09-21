@@ -47,7 +47,8 @@ class PostsController @Inject()(
           opt match {
             case Some(p) => BadRequest(Json.obj("status"->400,
                                                 "message"-> "Id is already in use"))
-            case None => postRepository.insert(post);
+            //TOdo should this be on success of insert so inside a map?
+            case None => postRepository.insert(post)
               Ok((Json.obj("status" -> 200, "data" -> Json.toJson(post))))
           }
         }
@@ -97,8 +98,7 @@ class PostsController @Inject()(
     */
 
   def delete(id: Int): Action[AnyContent] = Action.async { request =>
-    postRepository.delete(id).map(res => (Ok(Json.toJson("status" -> "204"))))
-
+    postRepository.delete(id).map(res => (Ok(Json.toJson("status" -> "200"))))
   }
 
   /**
@@ -117,22 +117,16 @@ class PostsController @Inject()(
         }
       },
       post => {
-        //check if update is trying to change the id.
-        def futOptPost = postRepository.find(id)
+        def futPost: Future[Either[String, Post]] = postRepository.updatePosts (id, post)
 
-        futOptPost.map { opt: Option[Post] =>
-          opt match {
-            //post by id exists, remove it and add the new post.
-              //TODO tie together  into an update function in post repository, these are async ops now
-            case Some(p) => postRepository.delete(p.id); postRepository.insert(post);
-              Ok(Json.obj("status" -> 200, "data" -> post))
-            case None => BadRequest(Json.obj("status" -> 400,
-              "message" -> " Changing the id of a post must not possible"))
+        futPost.map { e =>
+          e match {
+            case Right(p) => Ok(Json.obj ("status" -> 200, "data" -> p))
+            case Left(msg) =>  BadRequest(Json.obj("status" -> "400", "message" -> msg))
           }
         }
       }
     )
   }
-
 
 }
