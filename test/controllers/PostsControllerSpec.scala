@@ -49,7 +49,29 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentType(create) mustBe Some("application/json")
       contentAsString(create) mustBe """{"id":4,"title":"Shakrah","body":"Yves"}"""
     }
-    //"It should fail, if there is already a Post with the same id present" in {}
+    "It should fail, if there is already a Post with the same id present" in {
+      val executionContext = inject[ExecutionContext]
+      implicit val sys = ActorSystem("MyTest")
+      implicit val materializer = ActorMaterializer()
+
+      val controller = new PostsController(
+        stubControllerComponents(),
+        PostRepository(ec = executionContext),
+        executionContext
+      )
+
+      val newPost = Json.obj("id" -> 1, "title" -> "Shakrah", "body" -> "Yves")
+      val create = controller.create()
+        .apply(
+          FakeRequest(
+            method=POST,
+            uri="/posts",
+
+            headers=FakeHeaders(Seq("Content-type"-> "application/json")),
+            body=newPost))
+
+      status(create) mustBe 400
+    }
     //if wrong content type error contains an example?
   }
 
@@ -75,7 +97,20 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentType(getById) mustBe Some("application/json")
       contentAsString(getById) mustBe expected
     }
-    // "If the post does not exist, returns a 404 with a json" on {}
+    "If the post does not exist, returns a 404 with a json" in {
+      val executionContext = inject[ExecutionContext]
+      implicit val sys = ActorSystem("MyTest")
+      implicit val materializer = ActorMaterializer()
+
+      val controller = new PostsController(
+        stubControllerComponents(),
+        PostRepository(ec = executionContext),
+        executionContext)
+
+      val getById = controller.readSingle(id=3)().apply(FakeRequest(GET, "/posts/:id"))
+
+      status(getById) mustBe 400
+    }
   }
 
   "PostsController GET/posts" should {
@@ -128,7 +163,28 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentType(updateById) mustBe Some("application/json")
       contentAsString(updateById) mustBe """{"id":1,"title":"newTitle","body":"newBody"}"""
     }
-    //"Changing the id of a post must not possible." in {}
+    "Changing the id of a post must not possible." in {
+      val executionContext = inject[ExecutionContext]
+      implicit val sys = ActorSystem("MyTest")
+      implicit val materializer = ActorMaterializer()
+
+      val controller = new PostsController(
+        stubControllerComponents(),
+        PostRepository(ec = executionContext),
+        executionContext)
+
+      val newPost = Json.obj("id" -> 3, "title" -> "Title 1", "body" -> "Body 1")
+      val updateById = controller.update(1)
+        .apply(
+          FakeRequest(
+            method=POST,
+            uri="/posts/:id",
+
+            headers=FakeHeaders(Seq("Content-type"-> "application/json")),
+            body=newPost))
+
+      status(updateById) mustBe 400
+    }
     //when id is not found
   }
 

@@ -57,25 +57,12 @@ class PostRepository @Inject()(
           posts -= p
           Json.obj("message" -> "Post has been deleted")
         }
-
-    //  case None => Future {posts}
     }
   }
 
-  //def update(id: Int,  newPost: Post): Future[Option[Post]] = {
-  def update(id: Int): Future[Option[Post]] = {
-    def optPost = posts.find(_.id == id)
 
-    optPost match {
-        //TODO use buffer methods, update
-      //case Some(p) => posts -= p; posts += newPost; Future {posts.find(_.id == id)}
-     // case Some(p) => posts -= p; posts += newPost; Future {posts.find(_.id == id)}
-      case None => Future { None}
-    }
-  }
 
-  def create = ???
-  //tODO should only create if id does not already exist
+
 
 }
 

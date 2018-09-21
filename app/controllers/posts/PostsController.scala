@@ -27,7 +27,7 @@ class PostsController @Inject()(
     *
     * and saves it into the persistance layer. The created Post is then returned.
     *
-    * TODO: It should fail, if there is already a Post with the same id present.
+    * It should fail, if there is already a Post with the same id present.
     *
     */
   def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
@@ -40,31 +40,25 @@ class PostsController @Inject()(
         }
       },
       post => {
-        //get post from form?
-        postRepository.insert(post).map(persisted => Ok(Json.toJson(persisted)))
+        //check if post with id already exists
+        def futOptPost = postRepository.find(post.id)
+
+        futOptPost.map { opt: Option[Post] =>
+          opt match {
+            case Some(p) => BadRequest(Json.obj("status"->400,
+                                                "message"-> "Id is already in use"))
+            case None => postRepository.insert(post); Ok(Json.toJson(post))
+          }
+        }
       }
     )
   }
-
-  /*
-  userForm.bindFromRequest.fold(
-  formWithErrors => {
-    // binding failure, you retrieve the form containing errors:
-    BadRequest(views.html.user(formWithErrors))
-  },
-  userData => {
-    /* binding success, you get the actual value. */
-    val newUser = models.User(userData.name, userData.age)
-    val id = models.User.create(newUser)
-    Redirect(routes.Application.home(id))
-  }
-)*/
 
 
   /**
     * This returns a Json Array with a list of all Posts.
     *
-    * TODO: Should return the Posts in ascending order on the ids.
+    * Should return the Posts in ascending order on the ids.
     */
   def readAll(): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     postRepository.findAll.map { posts =>
@@ -74,8 +68,8 @@ class PostsController @Inject()(
   }
 
   /**
-    * TODO: Returns only the post with the matching id
-    * TODO: If the post does not exist, returns a 404 with a json like
+    * Returns only the post with the matching id
+    * If the post does not exist, returns a 404 with a json like
     *
     * {
     * "status": 404,
@@ -97,7 +91,7 @@ class PostsController @Inject()(
   /**
     * Does not contain any body in the request
     *
-    * TODO Deletes the post with the given id.
+    * Deletes the post with the given id.
     */
 
   def delete(id: Int): Action[AnyContent] = Action.async { implicit request =>
@@ -107,8 +101,8 @@ class PostsController @Inject()(
   /**
     * Request body contains the post.
     *
-    * TODO Updates the post with the given id.
-    * TODO Changing the id of a post must not possible.
+    * Updates the post with the given id.
+    * Changing the id of a post must not possible.
     */
   def update(id: Int): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val readResult = request.body.validate[Post]
@@ -120,11 +114,16 @@ class PostsController @Inject()(
         }
       },
       post => {
-        def futOptPost = postRepository.update(id)
+        //check if update is trying to change the id.
+        def futOptPost = postRepository.find(id)
 
         futOptPost.map { opt: Option[Post] =>
           opt match {
-            case Some(p) => Ok(Json.toJson(p))
+            //post by id exists, remove it and add the new post.
+              //tie together  into an update function in post repository, these are async ops now
+            case Some(p) => postRepository.delete(p.id); postRepository.insert(post);  Ok(Json.toJson(post))
+            case None => BadRequest(Json.obj("status" -> 400,
+              "message" -> " Changing the id of a post must not possible"))
           }
         }
       }
