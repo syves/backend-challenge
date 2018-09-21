@@ -47,7 +47,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       status(create) mustBe OK
 
       contentType(create) mustBe Some("application/json")
-      contentAsString(create) mustBe """{"id":4,"title":"Shakrah","body":"Yves"}"""
+      contentAsString(create) mustBe """{"status":200,"data":{"id":4,"title":"Shakrah","body":"Yves"}}"""
     }
     "It should fail, if there is already a Post with the same id present" in {
       val executionContext = inject[ExecutionContext]
@@ -92,7 +92,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       val getById = controller.readSingle(id=1)().apply(FakeRequest(GET, "/posts/:id"))
 
       status(getById) mustBe OK
-      val expected = Json.obj("id" -> 1 ,"title" -> "Title 1","body"-> "Body 1").toString
+      val expected = """{"status":200,"data":{"id":1,"title":"Title 1","body":"Body 1"}}"""
 
       contentType(getById) mustBe Some("application/json")
       contentAsString(getById) mustBe expected
@@ -128,7 +128,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
         executionContext)
 
       val posts = controller.readAll().apply(FakeRequest(GET, "/posts"))
-      val expected = """[{"id":1,"title":"Title 1","body":"Body 1"},{"id":2,"title":"Title 2","body":"Body 2"}]"""
+      val expected = """{"status":200,"data":[{"id":1,"title":"Title 1","body":"Body 1"},{"id":2,"title":"Title 2","body":"Body 2"}]}"""
       status(posts) mustBe OK
       contentType(posts) mustBe Some("application/json")
       contentAsString(posts) mustBe expected
@@ -162,7 +162,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       status(updateById) mustBe OK
 
       contentType(updateById) mustBe Some("application/json")
-      contentAsString(updateById) mustBe """{"id":1,"title":"newTitle","body":"newBody"}"""
+      contentAsString(updateById) mustBe """{"status":200,"data":{"id":1,"title":"newTitle","body":"newBody"}}"""
     }
 
     "Changing the id of a post must not possible." in {
@@ -201,10 +201,9 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
         executionContext)
       val DeleteById = controller.delete(id=2)().apply(FakeRequest(POST, "/posts/:id"))
 
-      status(DeleteById) mustBe 204
+      //
+      status(DeleteById) mustBe 200
 
-      contentType(DeleteById) mustBe Some("application/json")
-      contentAsString(DeleteById) must include ("Post has been deleted")
     }
     //"when id not found" in {}
   }
