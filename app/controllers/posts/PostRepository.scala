@@ -1,14 +1,9 @@
 package controllers.posts
 
-import javax.inject._
-import play.api._
-import play.api.mvc._
 import com.google.inject.Inject
-import play.api.libs.json._
-import play.api.libs.json.JsValue
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.{ExecutionContext, Future}
-import akka.stream.ActorMaterializer
+
 /**
   * A "persistance" layer for the [[Post]]
   */
