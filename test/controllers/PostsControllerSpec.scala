@@ -23,7 +23,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
   "PostsController POST/posts should" should {
 
-    "render a single post on `create` page from a new instance of controller" in {
+    "This takes a Json Post saves it into the persistance layer. The created Post is then returned" in {
       val executionContext = inject[ExecutionContext]
       implicit val sys = ActorSystem("MyTest")
       implicit val materializer = ActorMaterializer()
@@ -49,12 +49,14 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentType(create) mustBe Some("application/json")
       contentAsString(create) mustBe """{"id":4,"title":"Shakrah","body":"Yves"}"""
     }
+    //"It should fail, if there is already a Post with the same id present" in {}
+    //if wrong content type error contains an example?
   }
 
 
   "PostsController GET/posts/:id" should {
 
-    "render a single post on `posting` page from a new instance of controller" in {
+    "Returns only the post with the matching id" in {
 
       val executionContext = inject[ExecutionContext]
       implicit val sys = ActorSystem("MyTest")
@@ -73,11 +75,12 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentType(getById) mustBe Some("application/json")
       contentAsString(getById) mustBe expected
     }
+    // "If the post does not exist, returns a 404 with a json" on {}
   }
 
   "PostsController GET/posts" should {
 
-    "render all the posts in ascending order on `list` page from a new instance of controller" in {
+    "returns all the posts in ascending order" in {
 
     val executionContext = inject[ExecutionContext]
     implicit val sys = ActorSystem("MyTest")
@@ -100,7 +103,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
   "PostsController PUT/posts/:id" should {
 
 
-    "render a single post on `update` page, after update, from a new instance of controller" in {
+    "This takes a Json Post.Updates the post with the given id. Changing the id of a post must not possible." in {
         val executionContext = inject[ExecutionContext]
         implicit val sys = ActorSystem("MyTest")
         implicit val materializer = ActorMaterializer()
@@ -125,12 +128,14 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentType(updateById) mustBe Some("application/json")
       contentAsString(updateById) mustBe """{"id":1,"title":"newTitle","body":"newBody"}"""
     }
+    //"Changing the id of a post must not possible." in {}
+    //when id is not found
   }
 
   "PostsController DELETE/posts/:id" should {
 
 
-    "render a single message on `delete` page, after update, from a new instance of controller" in {
+    "Does not contain any body in the reques. Deletes the post with the given id." in {
 
      val executionContext = inject[ExecutionContext]
     implicit val sys = ActorSystem("MyTest")
@@ -148,6 +153,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       val expected = """[{"id":1,"title":"Title 1","body":"Body 1"}]"""
       contentAsString(posts) must include
     }
+    //"when id not found" in {}
   }
 
 
