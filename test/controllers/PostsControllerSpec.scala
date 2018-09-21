@@ -49,6 +49,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       contentType(create) mustBe Some("application/json")
       contentAsString(create) mustBe """{"status":200,"data":{"id":4,"title":"Shakrah","body":"Yves"}}"""
     }
+
     "It should fail, if there is already a Post with the same id present" in {
       val executionContext = inject[ExecutionContext]
       implicit val sys = ActorSystem("MyTest")
@@ -72,7 +73,30 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       status(create) mustBe 400
     }
-    //if wrong content type error contains an example?
+    //TODO if wrong content type error contains an example?
+    "It should fail, if Json content is incorrect" in {
+      val executionContext = inject[ExecutionContext]
+      implicit val sys = ActorSystem("MyTest")
+      implicit val materializer = ActorMaterializer()
+
+      val controller = new PostsController(
+        stubControllerComponents(),
+        PostRepository(ec = executionContext),
+        executionContext
+      )
+
+      val newPost = Json.obj("id" -> 1, "title" -> 1, "body" -> "Yves")
+      val create = controller.create()
+        .apply(
+          FakeRequest(
+            method=POST,
+            uri="/posts",
+
+            headers=FakeHeaders(Seq("Content-type"-> "application/json")),
+            body=newPost))
+
+      status(create) mustBe 400
+    }
   }
 
 
@@ -118,9 +142,9 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
     "returns all the posts in ascending order" in {
 
-    val executionContext = inject[ExecutionContext]
-    implicit val sys = ActorSystem("MyTest")
-    implicit val materializer = ActorMaterializer()
+      val executionContext = inject[ExecutionContext]
+      implicit val sys = ActorSystem("MyTest")
+      implicit val materializer = ActorMaterializer()
 
       val controller = new PostsController(
         stubControllerComponents(),
@@ -138,11 +162,10 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
   "PostsController PUT/posts/:id" should {
 
-
     "This takes a Json Post.Updates the post with the given id. Changing the id of a post must not possible." in {
-        val executionContext = inject[ExecutionContext]
-        implicit val sys = ActorSystem("MyTest")
-        implicit val materializer = ActorMaterializer()
+      val executionContext = inject[ExecutionContext]
+      implicit val sys = ActorSystem("MyTest")
+      implicit val materializer = ActorMaterializer()
 
       val controller = new PostsController(
         stubControllerComponents(),
@@ -187,28 +210,45 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       status(updateById) mustBe 400
     }
+
+    "fails on id not found." in {
+      val executionContext = inject[ExecutionContext]
+      implicit val sys = ActorSystem("MyTest")
+      implicit val materializer = ActorMaterializer()
+
+      val controller = new PostsController(
+        stubControllerComponents(),
+        PostRepository(ec = executionContext),
+        executionContext)
+
+      val newPost = Json.obj("id" -> 5, "title" -> "newTitle", "body" -> "newBody")
+      val updateById = controller.update(1)
+        .apply(
+          FakeRequest(
+            method=POST,
+            uri="/posts/:id",
+
+            headers=FakeHeaders(Seq("Content-type"-> "application/json")),
+            body=newPost))
+
+      status(updateById) mustBe 400
+    }
   }
 
   "PostsController DELETE/posts/:id" should {
 
-
     "Does not contain any body in the request. Deletes the post with the given id." in {
 
-     val executionContext = inject[ExecutionContext]
-    implicit val sys = ActorSystem("MyTest")
-    implicit val materializer = ActorMaterializer()
+      val executionContext = inject[ExecutionContext]
+      implicit val sys = ActorSystem("MyTest")
+      implicit val materializer = ActorMaterializer()
+
       val controller = new PostsController(stubControllerComponents(), PostRepository(ec = executionContext),
         executionContext)
       val DeleteById = controller.delete(id=2)().apply(FakeRequest(POST, "/posts/:id"))
 
-      //
       status(DeleteById) mustBe 200
-
     }
-    //"when id not found" in {}
   }
 
-
-
-
-} //this is the closing bracket
+}

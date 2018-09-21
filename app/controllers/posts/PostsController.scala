@@ -98,7 +98,7 @@ class PostsController @Inject()(
     */
 
   def delete(id: Int): Action[AnyContent] = Action.async { request =>
-    postRepository.delete(id).map(res => (Ok(Json.toJson("status" -> "200"))))
+    postRepository.delete(id).map(res => Ok(Json.toJson("status" -> "200")))
   }
 
   /**
