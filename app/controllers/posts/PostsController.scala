@@ -1,12 +1,15 @@
 package controllers.posts
 
 import scala.concurrent.{ExecutionContext, Future}
+
 import javax.inject.Inject
 import javax.inject._
+
 import play.api._
-import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.json.JsValue
+import play.api.mvc._
+
 
 
 class PostsController @Inject()(
@@ -47,7 +50,6 @@ class PostsController @Inject()(
             case Some(p) => BadRequest(Json.obj("status"->404, "message"-> "Id is already in use"))
             case None    => postRepository.insert(post)
                             Ok((Json.obj("status" -> 200, "data" -> Json.toJson(post))))
-
           }
         }
       }
