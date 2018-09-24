@@ -20,6 +20,7 @@ class PostRepository @Inject()(
     Post(1, "Title 1", "Body 1")
   )
 
+  //TODO Future option
   def find(id: Int): Future[Option[Post]] = {
     Future {
       posts.find(_.id == id)
@@ -39,6 +40,7 @@ class PostRepository @Inject()(
     }
   }
 
+  //TODO either
   def delete(id: Int): Future[Unit] = {
 
     def optPost = posts.find(_.id == id)
@@ -65,11 +67,4 @@ class PostRepository @Inject()(
     }
   }
 
-}
-
-object PostRepository {
-  def apply(implicit ec: ExecutionContext): PostRepository = {
-    val p = new PostRepository()
-    p
-  }
 }
