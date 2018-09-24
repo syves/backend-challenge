@@ -54,9 +54,7 @@ class PostRepository @Inject()(
 
   def updatePosts(id: Int, post: Post): Future[Either[String, Post]] = {
 
-    def optPost = posts.find( p => p.id == id && id == post.id)
-
-    optPost match {
+    posts.find( p => p.id == id && id == post.id) match {
       case Some(toUpdate)  =>
         Future {
           posts -= toUpdate
