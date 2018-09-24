@@ -104,16 +104,16 @@ class PostsController @Inject()(
     * Changing the id of a post must not possible.
     */
   def update(id: Int): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    request.body.validate[Post].fold(
+    val readResultrequest.body.validate[Post]
+
+    readResult.fold(
       errors => {
         Future.successful {
           NotFound(Json.obj("status" -> "404", "message" -> "Post not found"))
         }
       },
       post => {
-        def futPost: Future[Either[String, Post]] = postRepository.updatePosts (id, post)
-
-        futPost.map { e =>
+       postRepository.updatePosts (id, post).map { e =>
           e match {
             case Right(p)  => Ok(Json.obj ("status" -> 200, "data" -> p))
             case Left(msg) =>  NotFound(Json.obj("status" -> 400, "message" -> msg))
