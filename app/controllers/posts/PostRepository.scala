@@ -48,6 +48,7 @@ class PostRepository @Inject()(
         Future {
           posts -= p
         }
+      case None => Future {()}
     }
   }
 
