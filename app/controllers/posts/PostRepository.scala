@@ -21,10 +21,12 @@ class PostRepository @Inject()(
   )
 
   //TODO Future option
-  def find(id: Int): Future[Option[Post]] = {
-    Future {
-      posts.find(_.id == id)
-    }
+  def find(id: Int): Future[Either[String, Post]] = {
+
+      posts.find(_.id == id) match {
+        case Some(post) => Future { Right(post) }
+        case None => Future{ Left("Post not found") }
+      }
   }
 
   def findAll: Future[Seq[Post]] = {

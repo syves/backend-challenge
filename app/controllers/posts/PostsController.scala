@@ -35,19 +35,23 @@ class PostsController @Inject()(
   def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val postResult = request.body.validate[Post]
 
+    //try to create a Post
     postResult.fold(
       errors => {
+        //not able to create Post, Id is not unique or other error on creation
         Future.successful {
           BadRequest(Json.obj("status" -> "400", "message" -> JsError.toJson(errors)))
         }
       },
       post => {
-        //check if post with id already exists
-        postRepository.find(post.id).map { opt: Option[Post] =>
-          opt match {
-            case Some(p) => BadRequest(Json.obj("status"->400, "message"-> "Id is already in use"))
-            case None    => postRepository.insert(post)
-                            Ok((Json.obj("status" -> 200, "data" -> Json.toJson(post))))
+        //check if newly creted post id already exists
+        postRepository.find(post.id).map { e =>
+          e match {
+            // We didnt find a post with Id provided at creation, so insert no post
+            case Left(_)    => postRepository.insert(post)
+              Ok((Json.obj("status" -> 200, "data" -> Json.toJson(post))))
+              //
+            case Right(_) => BadRequest(Json.obj("status"->400, "message"-> "Post with id already exists"))
           }
         }
       }
@@ -79,10 +83,10 @@ class PostsController @Inject()(
     */
   def readSingle(id: Int): Action[AnyContent] = Action.async { implicit request =>
 
-    postRepository.find(id).map { opt: Option[Post] =>
-      opt match {
-        case Some(p) => Ok(Json.obj("status" -> 200, "data" -> p))
-        case None => NotFound(Json.obj("status" -> 404, "message" -> "Post not found"))
+    postRepository.find(id).map { e =>
+      e match {
+        case Right(p) => Ok(Json.obj("status" -> 200, "data" -> p))
+        case Left(msg) => NotFound(Json.obj("status" -> 404, "message" -> msg))
       }
     }
   }
