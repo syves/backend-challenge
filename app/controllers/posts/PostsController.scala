@@ -86,7 +86,7 @@ class PostsController @Inject()(
     futOptPost.map { opt: Option[Post] =>
       opt match {
         case Some(p) => Ok(Json.obj("status" -> 200, "data" -> p))
-        case None => NotFound(Json.obj("status" -> "404", "message" -> "Post not found"))
+        case None => NotFound(Json.obj("status" -> 404, "message" -> "Post not found"))
       }
     }
   }
@@ -122,7 +122,7 @@ class PostsController @Inject()(
         futPost.map { e =>
           e match {
             case Right(p)  => Ok(Json.obj ("status" -> 200, "data" -> p))
-            case Left(msg) =>  NotFound(Json.obj("status" -> "404", "message" -> msg))
+            case Left(msg) =>  NotFound(Json.obj("status" -> 400, "message" -> msg))
           }
         }
       }
