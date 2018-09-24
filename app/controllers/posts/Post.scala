@@ -2,9 +2,6 @@ package controllers.posts
 
 import play.api.libs.json.{Format, Json}
 import play.api.data._
-import play.api.data.Forms._
-import play.api.data.validation.Constraints._
-import play.api.mvc._
 
 
 /**
