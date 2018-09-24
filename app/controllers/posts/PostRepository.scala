@@ -41,8 +41,7 @@ class PostRepository @Inject()(
       post
     }
   }
-
-  //TODO either
+  
   def delete(id: Int): Future[Unit] = {
 
     def optPost = posts.find(_.id == id)
