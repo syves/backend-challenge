@@ -248,8 +248,11 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
       implicit val sys = ActorSystem("MyTest")
       implicit val materializer = ActorMaterializer()
 
-      val controller = new PostsController(stubControllerComponents(), PostRepository(ec = executionContext),
+      val controller = new PostsController(
+        stubControllerComponents(),
+        new PostRepository()(executionContext),
         executionContext)
+
       val DeleteById = controller.delete(id=2)().apply(FakeRequest(POST, "/posts/:id"))
 
       status(DeleteById) mustBe 200
