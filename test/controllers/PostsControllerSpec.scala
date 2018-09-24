@@ -35,7 +35,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val controller = new PostsController(
         stubControllerComponents(),
-        PostRepository(ec = executionContext),
+        new PostRepository()(executionContext),
         executionContext
       )
 
@@ -62,7 +62,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val controller = new PostsController(
         stubControllerComponents(),
-        PostRepository(ec = executionContext),
+        new PostRepository()(executionContext),
         executionContext
       )
 
@@ -86,7 +86,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val controller = new PostsController(
         stubControllerComponents(),
-        PostRepository(ec = executionContext),
+        new PostRepository()(executionContext),
         executionContext
       )
 
@@ -115,7 +115,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val controller = new PostsController(
         stubControllerComponents(),
-        PostRepository(ec = executionContext),
+        new PostRepository()(executionContext),
         executionContext)
 
       val getById = controller.readSingle(id=1)().apply(FakeRequest(GET, "/posts/:id"))
@@ -134,7 +134,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val controller = new PostsController(
         stubControllerComponents(),
-        PostRepository(ec = executionContext),
+        new PostRepository()(executionContext),
         executionContext)
 
       val getById = controller.readSingle(id=3)().apply(FakeRequest(GET, "/posts/:id"))
@@ -153,7 +153,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val controller = new PostsController(
         stubControllerComponents(),
-        PostRepository(ec = executionContext),
+        new PostRepository()(executionContext),
         executionContext)
 
       val posts = controller.readAll().apply(FakeRequest(GET, "/posts"))
@@ -174,7 +174,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val controller = new PostsController(
         stubControllerComponents(),
-        PostRepository(ec = executionContext),
+        new PostRepository()(executionContext),
         executionContext)
 
       val newPost = Json.obj("id" -> 1, "title" -> "newTitle", "body" -> "newBody")
@@ -200,7 +200,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val controller = new PostsController(
         stubControllerComponents(),
-        PostRepository(ec = executionContext),
+        new PostRepository()(executionContext),
         executionContext)
 
       val newPost = Json.obj("id" -> 3, "title" -> "Title 1", "body" -> "Body 1")
@@ -223,7 +223,7 @@ class PostsControllerSpec extends PlaySpec with GuiceOneAppPerTest with Injectin
 
       val controller = new PostsController(
         stubControllerComponents(),
-        PostRepository(ec = executionContext),
+        new PostRepository()(executionContext),
         executionContext)
 
       val newPost = Json.obj("id" -> 5, "title" -> "newTitle", "body" -> "newBody")
