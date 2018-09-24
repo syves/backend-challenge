@@ -104,9 +104,7 @@ class PostsController @Inject()(
     * Changing the id of a post must not possible.
     */
   def update(id: Int): Action[JsValue] = Action.async(parse.json) { implicit request =>
-    val readResult = request.body.validate[Post]
-
-    readResult.fold(
+    request.body.validate[Post].fold(
       errors => {
         Future.successful {
           NotFound(Json.obj("status" -> "404", "message" -> "Post not found"))
