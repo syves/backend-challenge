@@ -47,7 +47,7 @@ class PostsController @Inject()(
 
         futOptPost.map { opt: Option[Post] =>
           opt match {
-            case Some(p) => BadRequest(Json.obj("status"->404, "message"-> "Id is already in use"))
+            case Some(p) => BadRequest(Json.obj("status"->400, "message"-> "Id is already in use"))
             case None    => postRepository.insert(post)
                             Ok((Json.obj("status" -> 200, "data" -> Json.toJson(post))))
           }
