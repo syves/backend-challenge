@@ -16,12 +16,5 @@ case class Post(
 object Post {
 
   implicit val postFormat: Format[Post] = Json.format[Post]
-
-
-  def apply(id: Int, title: String, body: String): Post = {
-    val p = new Post(id, title, body)
-    p
-  }
-
 }
 
