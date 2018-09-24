@@ -43,9 +43,7 @@ class PostsController @Inject()(
       },
       post => {
         //check if post with id already exists
-        def futOptPost = postRepository.find(post.id)
-
-        futOptPost.map { opt: Option[Post] =>
+        postRepository.find(post.id).map { opt: Option[Post] =>
           opt match {
             case Some(p) => BadRequest(Json.obj("status"->400, "message"-> "Id is already in use"))
             case None    => postRepository.insert(post)
@@ -81,9 +79,7 @@ class PostsController @Inject()(
     */
   def readSingle(id: Int): Action[AnyContent] = Action.async { implicit request =>
 
-    def futOptPost = postRepository.find(id)
-
-    futOptPost.map { opt: Option[Post] =>
+    postRepository.find(id).map { opt: Option[Post] =>
       opt match {
         case Some(p) => Ok(Json.obj("status" -> 200, "data" -> p))
         case None => NotFound(Json.obj("status" -> 404, "message" -> "Post not found"))
