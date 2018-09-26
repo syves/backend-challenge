@@ -98,8 +98,14 @@ class PostsController @Inject()(
     */
 
   def delete(id: Int): Action[AnyContent] = Action.async { request =>
-    postRepository.delete(id).map(res => Ok(Json.toJson("status" -> "200")))
+    postRepository.delete(id).map{ res =>
+      res match {
+        case Right(_) => Ok(Json.toJson("status" -> "200"))
+        case Left(msg) => NotFound(Json.obj("status" -> 404, "message" -> msg))
+      }
+    }
   }
+
 
   /**
     * Request body contains the post.

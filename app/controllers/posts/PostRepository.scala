@@ -41,8 +41,8 @@ class PostRepository @Inject()(
       post
     }
   }
-  
-  def delete(id: Int): Future[Unit] = {
+
+  def delete(id: Int): Future[Either[String, Post]] = {
 
     def optPost = posts.find(_.id == id)
 
@@ -50,8 +50,9 @@ class PostRepository @Inject()(
       case Some(p) =>
         Future {
           posts -= p
+          Right(p)
         }
-      case None => Future {()}
+      case None => Future {Left("Id not found")}
     }
   }
 
