@@ -20,7 +20,6 @@ class PostRepository @Inject()(
     Post(1, "Title 1", "Body 1")
   )
 
-  //TODO Future option
   def find(id: Int): Future[Either[String, Post]] = {
 
       posts.find(_.id == id) match {
